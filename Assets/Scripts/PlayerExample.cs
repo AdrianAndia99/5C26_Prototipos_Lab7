@@ -18,7 +18,6 @@ public class PlayerExample : BasePlayerController, IAimable, IMoveable, IAttacka
     [SerializeField] private float explosionHeight = 0.1f;
     [SerializeField] private float dashDistance = 5f;
     [SerializeField] private float dashDuration = 0.2f;
-
     public Vector2 Position
     {
         get
@@ -64,7 +63,6 @@ public class PlayerExample : BasePlayerController, IAimable, IMoveable, IAttacka
     private void Move2D(Vector2 dir)
     {
         Vector3 delta = new Vector3(dir.x, dir.y, 0f) * moveSpeed * Time.deltaTime;
-        //myRigidBody.linearVelocity += delta;
         transform.Translate(delta);
         Debug.Log("2D Move from " + name + ": " + dir);
     }
@@ -72,7 +70,6 @@ public class PlayerExample : BasePlayerController, IAimable, IMoveable, IAttacka
     private void Move3D(Vector2 dir)
     {
         Vector3 delta = new Vector3(dir.x, 0f, dir.y) * moveSpeed * Time.deltaTime;
-        //myRigidBody.linearVelocity += delta;
         transform.Translate(delta);
         Debug.Log("3D Move from " + name + ": " + dir);
     }
@@ -139,5 +136,4 @@ public class PlayerExample : BasePlayerController, IAimable, IMoveable, IAttacka
         transform.position = end;
         Debug.Log("Dash complete from " + name);
     }
-
 }
