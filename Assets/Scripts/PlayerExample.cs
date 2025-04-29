@@ -1,18 +1,17 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.InputSystem;
+public enum AttackMode { Shoot, Explode, Dash }
+public enum MoveMode { Move2D, Move3D, Rotate }
 public class PlayerExample : BasePlayerController, IAimable, IMoveable, IAttackable
 {
-    public enum MoveMode { Move2D, Move3D, Rotate }
-    public enum AttackMode { Shoot, Explode, Dash }
-
-    [Header("Movement Settings")]
-    public MoveMode currentMoveMode;
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float turnSpeed = 180f;
 
-    [Header("Attack Settings")]
+    public MoveMode currentMoveMode;
     public AttackMode currentAttackMode;
+
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private float bulletSpeed = 20f;
     [SerializeField] private GameObject explosionPrefab;
@@ -22,28 +21,33 @@ public class PlayerExample : BasePlayerController, IAimable, IMoveable, IAttacka
 
     public Vector2 Position
     {
-        get => _aimPosition;
+        get
+        {
+            return _aimPosition;
+        }
+
         set
         {
             _aimPosition = value;
-            Debug.Log("Aim from " + name + ": " + _aimPosition);
+
+            Debug.Log("Aim from " + this.name);
         }
     }
-
     protected override void Awake()
     {
         base.Awake();
+
         Debug.Log("Child Awake");
     }
-
     protected override void Start()
     {
         base.Start();
+
         Debug.Log("Child Start");
     }
-
     public void Move(Vector2 direction)
     {
+
         switch (currentMoveMode)
         {
             case MoveMode.Move2D:
@@ -57,18 +61,19 @@ public class PlayerExample : BasePlayerController, IAimable, IMoveable, IAttacka
                 break;
         }
     }
-
     private void Move2D(Vector2 dir)
     {
         Vector3 delta = new Vector3(dir.x, dir.y, 0f) * moveSpeed * Time.deltaTime;
-        transform.position += delta;
+        //myRigidBody.linearVelocity += delta;
+        transform.Translate(delta);
         Debug.Log("2D Move from " + name + ": " + dir);
     }
 
     private void Move3D(Vector2 dir)
     {
         Vector3 delta = new Vector3(dir.x, 0f, dir.y) * moveSpeed * Time.deltaTime;
-        transform.position += delta;
+        //myRigidBody.linearVelocity += delta;
+        transform.Translate(delta);
         Debug.Log("3D Move from " + name + ": " + dir);
     }
 
@@ -80,29 +85,27 @@ public class PlayerExample : BasePlayerController, IAimable, IMoveable, IAttacka
         Debug.Log("Rotate from " + name + ": " + dir);
     }
 
-    public void Attack(Vector2 aimPos)
+    public void Attack(Vector2 position)
     {
         switch (currentAttackMode)
         {
             case AttackMode.Shoot:
-                Shoot(aimPos);
+                Shoot(position);
                 break;
             case AttackMode.Explode:
-                Explode(aimPos);
+                Explode(position);
                 break;
             case AttackMode.Dash:
-                Dash(aimPos);
+                Dash(position);
                 break;
         }
     }
 
     private void Shoot(Vector2 aimPos)
     {
-        Vector3 world = Camera.main.ScreenToWorldPoint(new Vector3(aimPos.x, aimPos.y, 10f));
+        Vector3 world = Camera.main.ScreenToWorldPoint(new Vector3(aimPos.x, aimPos.y,0));
         Vector3 dir = (world - transform.position).normalized;
-        GameObject b = Instantiate(bulletPrefab, transform.position, Quaternion.LookRotation(dir));
-        if (b.TryGetComponent<Rigidbody>(out var rb))
-            rb.linearVelocity = dir * bulletSpeed;
+        GameObject b = Instantiate(bulletPrefab, world, Quaternion.LookRotation(dir));
         Debug.Log("Shoot from " + name + " toward " + world);
     }
 
@@ -136,4 +139,5 @@ public class PlayerExample : BasePlayerController, IAimable, IMoveable, IAttacka
         transform.position = end;
         Debug.Log("Dash complete from " + name);
     }
+
 }
