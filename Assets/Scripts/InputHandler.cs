@@ -1,9 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System;
-
 public class InputHandler : MonoBehaviour
 {
     [SerializeField] private GameObject PlayerController;
@@ -21,22 +17,22 @@ public class InputHandler : MonoBehaviour
 
     public void OnMovement(InputAction.CallbackContext context)
     {
-        //Debug.Log(context.ReadValue<Vector2>());
-
-        _characterMovement.Move(context.ReadValue<Vector2>());
+        if (context.performed || context.canceled)
+        {
+            _characterMovement.Move(context.ReadValue<Vector2>());
+        }
     }
 
     public void OnAim(InputAction.CallbackContext context)
     {
-        //Debug.Log(context.ReadValue<Vector2>());
-
         _characterAim.Position = context.ReadValue<Vector2>();
     }
 
     public void OnAttack(InputAction.CallbackContext context)
     {
-        //Debug.Log(context.phase);
-
-        _characterAttack.Attack(_characterAim.Position);
+        if (context.performed)
+        {
+            _characterAttack.Attack(_characterAim.Position);
+        }
     }
 }
